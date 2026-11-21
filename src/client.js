@@ -203,7 +203,7 @@ function createFeaturedAudioCard(item) {
 
   const title = document.createElement("h2");
   title.className = "featured-title";
-  title.textContent = item.caption || "Velho Texas — O Áudio Lendário do Du";
+  title.textContent = item.caption || "Velho texas";
 
   const sub = document.createElement("p");
   sub.className = "featured-sub";

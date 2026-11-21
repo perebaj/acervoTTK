@@ -9,6 +9,11 @@ import { classifyMediaKind, needsOpusConversion } from "../lib/shared.js";
 
 const SOURCE_DIR = process.argv[2] || "/Users/jonathansilva/Downloads/acertottk";
 
+const SKIP_SEED_KEYS = new Set([
+  "f1936a7df17d", // Registro em vídeo do TTK #3
+  "d950691a306c", // Óculos na régua e copo americano na mão
+]);
+
 const CUSTOM_CAPTIONS = {
   "WhatsApp Image 2026-11-21 at 18.19.17.jpeg":
     "Saindo da MP Conveniência com a caixa vermelha de 24 burdoguinhas debaixo do braço",
@@ -16,8 +21,6 @@ const CUSTOM_CAPTIONS = {
     "Capacete amarelo e sorriso de quem acabou de garantir o estoque",
   "WhatsApp Image 2026-11-21 at 18.19.17 (1).jpeg":
     "Caneca suando na mesa de madeira com a rapaziada na rua",
-  "WhatsApp Image 2026-11-21 at 18.19.15.jpeg":
-    "Óculos na régua e copo americano na mão",
   "WhatsApp Image 2026-11-21 at 18.19.15 (1).jpeg":
     "Cadeira giratória, JBL na janela e latinha gelada",
   "WhatsApp Image 2026-11-21 at 18.19.16.jpeg":
@@ -29,7 +32,7 @@ const CUSTOM_CAPTIONS = {
   "WhatsApp Image 2026-11-21 at 18.19.18 (2).jpeg":
     "Direto do arquivo confidencial do @dixx_do_ttk",
   "duttkaudio1.mp3": "Pérola clássica do TTK #1",
-  "velhotexas.mp3": "Velho Texas — O Áudio Lendário do Du",
+  "velhotexas.mp3": "Velho texas",
 };
 
 const FEATURED_OVERRIDES = {
@@ -101,8 +104,8 @@ async function main() {
     const filename = entries[idx];
     const seedKey = createHash("sha1").update(filename).digest("hex").slice(0, 12);
 
-    if (existingKeys.has(seedKey)) {
-      console.log(`Pulando já existente: ${filename}`);
+    if (SKIP_SEED_KEYS.has(seedKey) || existingKeys.has(seedKey)) {
+      console.log(`Pulando ignorado ou já existente: ${filename}`);
       continue;
     }
 
