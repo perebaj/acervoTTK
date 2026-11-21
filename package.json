@@ -1,0 +1,20 @@
+{
+  "name": "acervo-ttk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/client.js --bundle --format=esm --target=es2022 --outfile=public/bundle.js",
+    "test": "node --test tests/*.test.js",
+    "seed": "node scripts/seed-initial.js"
+  },
+  "dependencies": {
+    "@breezystack/lamejs": "^1.2.7",
+    "@vercel/blob": "^1.0.0",
+    "ogg-opus-decoder": "^1.7.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "ffmpeg-static": "^5.2.0"
+  }
+}
