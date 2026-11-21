@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acervo do TTK — Galeria Oficial da Burdoguinha</title>
+  <meta name="description" content="Vídeos, áudios e fotos históricas do Carlos (TTK) e sua inseparável caixa de 24 burdoguinhas.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Acervo do TTK — Caixa de 24 Burdoguinhas">
+  <meta property="og:description" content="Ouça as pérolas, reveja os vídeos e mande sua lembrança do Carlos para o engradado oficial.">
+
+  <link rel="icon" type="image/png" sizes="64x64" href="./favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="curb-stripe" aria-hidden="true"></div>
+
+  <div class="page-wrap">
+    <section class="review-banner" id="reviewBanner" hidden aria-live="polite">
+      <div class="review-header">
+        <h2 class="review-title">🍺 Revisão de envio pendente</h2>
+        <p class="review-subtitle" id="reviewMeta"></p>
+      </div>
+      <div class="review-preview" id="reviewPreview"></div>
+      <p class="review-caption" id="reviewCaption"></p>
+      <div class="review-actions" id="reviewActions">
+        <button type="button" class="btn btn-approve" id="approveBtn">
+          Aprovar e publicar no site
+        </button>
+        <button type="button" class="btn btn-reject" id="rejectBtn">
+          Rejeitar e apagar arquivo
+        </button>
+      </div>
+      <p class="review-feedback" id="reviewFeedback" hidden></p>
+    </section>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <h1 class="hero-title">Acervo do TTK</h1>
+        <p class="hero-lead">
+          Relíquias em vídeo, áudio e foto do Carlos — fiscal oficial de conveniência e devoto fiel da caixa vermelha de 24 burdoguinhas. Tem alguma pérola dele perdida no WhatsApp? Manda pra cá que entra na fila do engradado.
+        </p>
+        <div class="hero-actions">
+          <button type="button" class="btn btn-primary" id="openUploadBtn">
+            Enviar vídeo, áudio ou foto 🍺
+          </button>
+        </div>
+      </div>
+
+      <aside class="crate-widget" aria-label="Medidor da caixa de 24 burdoguinhas">
+        <div class="crate-top">
+          <span class="crate-heading" id="crateHeading">Caixa #1 de 24</span>
+          <span class="crate-count" id="crateCount">Carregando...</span>
+        </div>
+        <div class="crate-grid" id="crateGrid" aria-hidden="true"></div>
+        <p class="crate-note" id="crateNote">Cada lembrança aprovada ocupa um casco na grade.</p>
+      </aside>
+    </header>
+
+    <nav class="filter-bar" aria-label="Filtrar memórias por formato">
+      <button type="button" class="filter-btn is-active" data-filter="all">Tudo <span class="filter-num" id="countAll">0</span></button>
+      <button type="button" class="filter-btn" data-filter="video">Vídeos <span class="filter-num" id="countVideo">0</span></button>
+      <button type="button" class="filter-btn" data-filter="audio">Áudios <span class="filter-num" id="countAudio">0</span></button>
+      <button type="button" class="filter-btn" data-filter="image">Fotos <span class="filter-num" id="countImage">0</span></button>
+    </nav>
+
+    <main id="galleryMain" aria-live="polite">
+      <p class="status-msg" id="galleryStatus">Abrindo o freezer da conveniência...</p>
+
+      <section class="audio-section" id="audioSection" hidden>
+        <h2 class="section-heading">Pérolas em áudio</h2>
+        <div class="audio-grid" id="audioGrid"></div>
+      </section>
+
+      <section class="visual-section" id="visualSection" hidden>
+        <h2 class="section-heading" id="visualHeading">Fotos e vídeos</h2>
+        <div class="media-grid" id="mediaGrid"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Acervo oficial do Carlos (TTK) e suas burdoguinhas geladas.</p>
+      <p>Feito com ❤️ por <a href="https://x.com/jj_neno" target="_blank" rel="noopener noreferrer">@jj_neno</a></p>
+    </footer>
+  </div>
+
+  <dialog class="modal" id="uploadDialog" aria-labelledby="uploadDialogTitle">
+    <form class="modal-card" id="uploadForm" method="dialog">
+      <div class="modal-head">
+        <h2 class="modal-title" id="uploadDialogTitle">Mandar relíquia pro acervo 🍺</h2>
+        <button type="button" class="icon-close" id="closeUploadBtn" aria-label="Fechar janela">✕</button>
+      </div>
+
+      <p class="modal-desc">
+        Escolha um vídeo, áudio (inclusive <code>.opus</code> direto do WhatsApp) ou foto de até 50 MB. Assim que você enviar, o administrador recebe um aviso por e-mail para aprovar e publicar.
+      </p>
+
+      <div class="hp-field" aria-hidden="true">
+        <label for="websiteInput">Não preencha</label>
+        <input type="text" id="websiteInput" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <label class="field">
+        <span class="field-label">Seu nome ou apelido</span>
+        <input type="text" id="authorInput" name="author" maxlength="60" placeholder="Ex.: Renan, Jojô, Galera do bar" required>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Legenda da lembrança</span>
+        <textarea id="captionInput" name="caption" rows="2" maxlength="240" placeholder="Conta o contexto desse vídeo, áudio ou foto..." required></textarea>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Arquivo (vídeo, áudio ou foto)</span>
+        <input
+          type="file"
+          id="fileInput"
+          name="file"
+          accept="image/*,video/*,audio/*,.opus,.ogg,.mp3,.m4a,.wav,.mp4,.mov"
+          required
+        >
+      </label>
+
+      <p class="upload-status" id="uploadStatus" hidden></p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancelUploadBtn">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="submitUploadBtn">Enviar para aprovação</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="lightbox" id="lightboxDialog" aria-label="Visualização ampliada">
+    <div class="lightbox-inner">
+      <button type="button" class="icon-close lightbox-close" id="closeLightboxBtn" aria-label="Fechar visualização">✕</button>
+      <div class="lightbox-stage" id="lightboxStage"></div>
+      <div class="lightbox-meta">
+        <p class="lightbox-caption" id="lightboxCaption"></p>
+        <p class="lightbox-author" id="lightboxAuthor"></p>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="./assets-js/client.js"></script>
+</body>
+</html>
