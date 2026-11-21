@@ -44,6 +44,319 @@ body {
   );
 }
 
+/* Fullscreen animated sunburst intro with triangular beams + TTK centerpiece */
+.intro-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: #120e0f;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  clip-path: circle(150% at 50% 50%);
+  transition: clip-path 720ms cubic-bezier(0.65, 0, 0.35, 1), opacity 520ms ease;
+}
+
+.intro-stage[hidden] {
+  display: none;
+}
+
+.intro-stage.is-exiting {
+  clip-path: circle(0% at 50% 50%);
+  pointer-events: none;
+}
+
+.intro-beams-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.beams-spin-cw {
+  animation: spinBeamsCw 18s linear infinite;
+}
+
+.beams-spin-ccw {
+  animation: spinBeamsCcw 24s linear infinite;
+}
+
+.beam-wedge {
+  transform-origin: 0px 0px;
+  animation: beamShootIn 580ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 26ms);
+}
+
+/* Flying multi-brand beer bottles & cans traveling across the sunburst background */
+.intro-beer-field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.flying-beer {
+  position: absolute;
+  left: var(--x0, 50%);
+  top: var(--y0, 50%);
+  width: var(--size, 74px);
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.6));
+  will-change: transform, opacity;
+  animation: beerFlyTrajectory var(--dur, 4.4s) linear var(--delay, 0s) infinite backwards;
+}
+
+.flying-beer svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.intro-sound-btn {
+  margin-top: 0.85rem;
+  appearance: none;
+  cursor: pointer;
+  border: 2px solid #fff3c4;
+  background: linear-gradient(180deg, var(--curb-amber) 0%, #d49617 100%);
+  color: #19110b;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.96rem;
+  padding: 0.68rem 1.25rem;
+  border-radius: 999px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+  animation: soundBtnPulse 1.1s ease-in-out infinite alternate;
+}
+
+.intro-sound-btn[hidden] {
+  display: none;
+}
+
+.intro-progress-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.14);
+  z-index: 3;
+}
+
+.intro-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--curb-amber), #fff2c2, var(--crate-red));
+}
+
+.intro-progress-bar.is-running {
+  animation: introProgressFill var(--intro-ms, 9600ms) linear forwards;
+}
+
+.intro-centerpiece {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-shockwave {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 3px solid rgba(242, 190, 56, 0.72);
+  pointer-events: none;
+  animation: shockwavePulse 2.1s ease-out infinite;
+}
+
+.intro-shockwave-delayed {
+  animation-delay: 0.95s;
+  border-color: rgba(217, 56, 41, 0.78);
+}
+
+.intro-ring-text {
+  position: absolute;
+  width: 318px;
+  height: 318px;
+  pointer-events: none;
+  animation: spinRingText 14s linear infinite;
+}
+
+.intro-ring-text text {
+  fill: #fff4d6;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 800;
+  font-size: 19.5px;
+  letter-spacing: 3.1px;
+}
+
+.intro-avatar-wrap {
+  width: 208px;
+  height: 208px;
+  border-radius: 50%;
+  padding: 6px;
+  background: conic-gradient(
+    from 0deg,
+    var(--curb-amber),
+    #fff3c4,
+    var(--crate-red),
+    var(--curb-amber)
+  );
+  box-shadow:
+    0 0 0 6px rgba(21, 19, 20, 0.85),
+    0 24px 60px rgba(0, 0, 0, 0.75);
+  animation:
+    ttkPopIn 720ms cubic-bezier(0.34, 1.56, 0.64, 1) 140ms backwards,
+    ttkBob 1.6s ease-in-out 860ms infinite alternate;
+}
+
+.intro-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  background: var(--asphalt-night);
+}
+
+.intro-tag {
+  margin: 3.6rem 0 0;
+  padding: 0.42rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(21, 19, 20, 0.88);
+  border: 1px solid rgba(242, 190, 56, 0.65);
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+  color: var(--curb-amber);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6);
+  animation: tagFadeUp 520ms ease-out 360ms backwards;
+}
+
+.intro-skip-btn {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 3;
+  appearance: none;
+  cursor: pointer;
+  background: rgba(21, 19, 20, 0.82);
+  color: var(--foam-cream);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  padding: 0.48rem 1rem;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.86rem;
+  backdrop-filter: blur(6px);
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.intro-skip-btn:hover {
+  border-color: var(--curb-amber);
+  background: rgba(21, 19, 20, 0.95);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@keyframes spinBeamsCw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinBeamsCcw {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes spinRingText {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes beamShootIn {
+  from {
+    opacity: 0;
+    transform: scale(0.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ttkPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.25) rotate(-18deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-3deg);
+  }
+}
+
+@keyframes ttkBob {
+  from { transform: scale(1) rotate(-3deg); }
+  to { transform: scale(1.045) rotate(3deg); }
+}
+
+@keyframes shockwavePulse {
+  0% {
+    transform: scale(0.88);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1.95);
+    opacity: 0;
+  }
+}
+
+@keyframes tagFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes beerFlyTrajectory {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(var(--s0, 0.25)) rotate(var(--r0, 0deg));
+  }
+  12% {
+    opacity: 0.96;
+  }
+  86% {
+    opacity: 0.96;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate3d(var(--dx, 420px), var(--dy, -320px), 0) scale(var(--s1, 1.25)) rotate(var(--r1, 340deg));
+  }
+}
+
+@keyframes soundBtnPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.06); }
+}
+
+@keyframes introProgressFill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
 .page-wrap {
   max-width: 1140px;
   margin: 0 auto;
@@ -719,8 +1032,18 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .btn-primary {
+  .hero-actions .btn {
     width: 100%;
+  }
+
+  .intro-avatar-wrap {
+    width: 170px;
+    height: 170px;
+  }
+
+  .intro-ring-text {
+    width: 266px;
+    height: 266px;
   }
 }
 

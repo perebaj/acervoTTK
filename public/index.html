@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Acervo do TTK — Galeria Oficial da Burdoguinha</title>
-  <meta name="description" content="Vídeos, áudios e fotos históricas do Carlos (TTK) e sua inseparável caixa de 24 burdoguinhas.">
+  <title>Acervo do TTK</title>
+  <meta name="description" content="Vídeos, áudios e fotos do Carlos (TTK) e da clássica caixa de 24 burdoguinhas.">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://acervo-ttk.vercel.app">
-  <meta property="og:title" content="Acervo do TTK — Caixa de 24 Burdoguinhas">
-  <meta property="og:description" content="Ouça as pérolas, reveja os vídeos e mande sua lembrança do Carlos para o engradado oficial.">
+  <meta property="og:title" content="Acervo do TTK">
+  <meta property="og:description" content="Vídeos, áudios e fotos do Carlos (TTK). Envie registros novos para o acervo.">
   <meta property="og:image" content="https://3xp59nm7vf0ksplv.public.blob.vercel-storage.com/media/seed-8fdde2e579b5-inlHRDfz9DRfX4CyE07dRZ3QvSdQfy.jpeg">
   <meta name="twitter:card" content="summary_large_image">
 
@@ -22,6 +22,83 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <div class="intro-stage" id="introStage" role="region" aria-label="Abertura animada do Acervo do TTK">
+    <svg
+      class="intro-beams-svg"
+      viewBox="-1000 -1000 2000 2000"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+    >
+      <defs>
+        <radialGradient id="beamRedGrad" cx="0" cy="0" r="1400" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#ff5a47" />
+          <stop offset="55%" stop-color="#d93829" />
+          <stop offset="100%" stop-color="#7a160e" />
+        </radialGradient>
+        <radialGradient id="beamGoldGrad" cx="0" cy="0" r="1400" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#ffe89e" />
+          <stop offset="50%" stop-color="#f2be38" />
+          <stop offset="100%" stop-color="#9e6d08" />
+        </radialGradient>
+        <radialGradient id="centerVignette" cx="0" cy="0" r="950" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#151314" stop-opacity="0.55" />
+          <stop offset="35%" stop-color="#151314" stop-opacity="0" />
+          <stop offset="100%" stop-color="#090708" stop-opacity="0.65" />
+        </radialGradient>
+      </defs>
+      <g class="beams-spin-cw" id="introBeamsPrimary"></g>
+      <g class="beams-spin-ccw" id="introBeamsSecondary"></g>
+      <circle cx="0" cy="0" r="1500" fill="url(#centerVignette)" />
+    </svg>
+
+    <div class="intro-beer-field" id="introBeerField" aria-hidden="true"></div>
+
+    <div class="intro-centerpiece">
+      <div class="intro-shockwave" aria-hidden="true"></div>
+      <div class="intro-shockwave intro-shockwave-delayed" aria-hidden="true"></div>
+
+      <svg class="intro-ring-text" viewBox="0 0 320 320" aria-hidden="true">
+        <defs>
+          <path
+            id="ttkCirclePath"
+            d="M 160, 160 m -128, 0 a 128,128 0 1,1 256,0 a 128,128 0 1,1 -256,0"
+          />
+        </defs>
+        <text>
+          <textPath href="#ttkCirclePath" startOffset="0%">
+            ★ ACERVO DO TTK ★ CAIXA DE 24 BURDOGUINHAS ★
+          </textPath>
+        </text>
+      </svg>
+
+      <div class="intro-avatar-wrap">
+        <img
+          src="./ttk-face.png"
+          alt="Rosto sorridente do Carlos (TTK) no centro dos feixes"
+          class="intro-avatar"
+          width="512"
+          height="512"
+        >
+      </div>
+
+      <p class="intro-tag">Acervo do TTK 🍺</p>
+
+      <button type="button" class="intro-sound-btn" id="introSoundBtn" hidden>
+        🔊 Tocar música da abertura
+      </button>
+    </div>
+
+    <div class="intro-progress-track" aria-hidden="true">
+      <div class="intro-progress-bar" id="introProgressBar"></div>
+    </div>
+
+    <audio id="introAudio" src="./intro-music.mp3" preload="auto"></audio>
+
+    <button type="button" class="intro-skip-btn" id="skipIntroBtn">
+      Pular abertura
+    </button>
+  </div>
+
   <div class="curb-stripe" aria-hidden="true"></div>
 
   <div class="page-wrap">
@@ -47,11 +124,14 @@
       <div class="hero-copy">
         <h1 class="hero-title">Acervo do TTK</h1>
         <p class="hero-lead">
-          Relíquias em vídeo, áudio e foto do Carlos — fiscal oficial de conveniência e devoto fiel da caixa vermelha de 24 burdoguinhas. Tem alguma pérola dele perdida no WhatsApp? Manda pra cá que entra na fila do engradado.
+          Vídeos, áudios e fotos do Carlos (TTK) e da clássica caixa de 24 burdoguinhas. Tem algum registro dele guardado aí? Envie abaixo para entrar na galeria.
         </p>
         <div class="hero-actions">
           <button type="button" class="btn btn-primary" id="openUploadBtn">
             Enviar vídeo, áudio ou foto 🍺
+          </button>
+          <button type="button" class="btn btn-ghost" id="replayIntroBtn">
+            Rever abertura ✨
           </button>
         </div>
       </div>
@@ -62,7 +142,7 @@
           <span class="crate-count" id="crateCount">Carregando...</span>
         </div>
         <div class="crate-grid" id="crateGrid" aria-hidden="true"></div>
-        <p class="crate-note" id="crateNote">Cada lembrança aprovada ocupa um casco na grade.</p>
+        <p class="crate-note" id="crateNote">Cada item publicado preenche uma garrafa da caixa.</p>
       </aside>
     </header>
 
@@ -78,10 +158,10 @@
     </nav>
 
     <main id="galleryMain" aria-live="polite">
-      <p class="status-msg" id="galleryStatus">Abrindo o freezer da conveniência...</p>
+      <p class="status-msg" id="galleryStatus">Carregando o acervo...</p>
 
       <section class="audio-section" id="audioSection" hidden>
-        <h2 class="section-heading">Pérolas em áudio</h2>
+        <h2 class="section-heading">Áudios</h2>
         <div class="audio-grid" id="audioGrid"></div>
       </section>
 
@@ -110,12 +190,12 @@
   <dialog class="modal" id="uploadDialog" aria-labelledby="uploadDialogTitle">
     <form class="modal-card" id="uploadForm" method="dialog">
       <div class="modal-head">
-        <h2 class="modal-title" id="uploadDialogTitle">Mandar relíquia pro acervo 🍺</h2>
+        <h2 class="modal-title" id="uploadDialogTitle">Enviar para o acervo 🍺</h2>
         <button type="button" class="icon-close" id="closeUploadBtn" aria-label="Fechar janela">✕</button>
       </div>
 
       <p class="modal-desc">
-        Escolha um vídeo, áudio (inclusive <code>.opus</code> direto do WhatsApp) ou foto de até 50 MB. Assim que você enviar, o administrador recebe um aviso por e-mail para aprovar e publicar.
+        Envie um vídeo, áudio (inclusive do WhatsApp) ou foto de até 50 MB. O envio passa por aprovação antes de aparecer na página.
       </p>
 
       <div class="hp-field" aria-hidden="true">
@@ -124,13 +204,13 @@
       </div>
 
       <label class="field">
-        <span class="field-label">Seu nome ou apelido</span>
-        <input type="text" id="authorInput" name="author" maxlength="60" placeholder="Ex.: Renan, Jojô, Galera do bar" required>
+        <span class="field-label">Seu nome</span>
+        <input type="text" id="authorInput" name="author" maxlength="60" placeholder="Ex.: João" required>
       </label>
 
       <label class="field">
-        <span class="field-label">Legenda da lembrança</span>
-        <textarea id="captionInput" name="caption" rows="2" maxlength="240" placeholder="Conta o contexto desse vídeo, áudio ou foto..." required></textarea>
+        <span class="field-label">Legenda</span>
+        <textarea id="captionInput" name="caption" rows="2" maxlength="240" placeholder="Escreva uma legenda curta..." required></textarea>
       </label>
 
       <label class="field">
