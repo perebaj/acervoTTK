@@ -16,6 +16,12 @@ test("encodes mono Float32 PCM audio into valid non-empty MP3 frames", () => {
   // MPEG-1/2 Audio frame sync begins with 0xFF and top 3 bits of second byte set (0xE0)
   assert.equal(mp3Bytes[0], 0xff);
   assert.equal(mp3Bytes[1] & 0xe0, 0xe0);
+
+  // Stereo encoding preserves right-channel signal when left channel is silent
+  const silentLeft = new Float32Array(sampleRate);
+  const stereoMp3 = encodePcmToMp3(silentLeft, sampleRate, 128, samples);
+  const silentMonoMp3 = encodePcmToMp3(silentLeft, sampleRate, 128);
+  assert.notDeepEqual(stereoMp3, silentMonoMp3);
 });
 
 test("transcodes real WhatsApp .opus file into playable MP3 bytes", async () => {

@@ -25,18 +25,26 @@ async function defaultSendEmail({ to, subject, html, text }) {
   return res.json();
 }
 
-function resolveBaseOrigin(req) {
-  if (process.env.PUBLIC_SITE_URL) {
-    return process.env.PUBLIC_SITE_URL.replace(/\/+$/, "");
+// Prefer platform-set URLs over request Host headers so forged Host values cannot hijack HMAC review links.
+function resolveBaseOrigin(explicitSiteUrl) {
+  const candidate =
+    explicitSiteUrl ||
+    process.env.PUBLIC_SITE_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "") ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+
+  if (candidate) {
+    return candidate.replace(/\/+$/, "");
   }
-  const proto = req.headers?.["x-forwarded-proto"] || "https";
-  const host = req.headers?.["x-forwarded-host"] || req.headers?.host || "localhost:3000";
-  return `${proto}://${host}`;
+  return "http://localhost:3000";
 }
 
 export function createSubmissionsHandler({
   store = vercelBlobStore,
   secret = process.env.APPROVAL_SECRET,
+  siteUrl = process.env.PUBLIC_SITE_URL || "https://acervo-ttk.vercel.app",
   notifyEmail = process.env.NOTIFY_EMAIL || "perebaj@gmail.com",
   sendEmail = defaultSendEmail,
 } = {}) {
@@ -47,11 +55,13 @@ export function createSubmissionsHandler({
 
     try {
       const item = validateSubmission(req.body);
+      const activeSecret = secret || process.env.APPROVAL_SECRET;
+      // Sign before writing to Blob so a missing secret never leaves an unreviewable pending record.
+      const token = signReviewToken(item.id, activeSecret);
+
       await store.put(`pending/${item.id}.json`, JSON.stringify(item));
 
-      const activeSecret = secret || process.env.APPROVAL_SECRET;
-      const token = signReviewToken(item.id, activeSecret);
-      const origin = resolveBaseOrigin(req);
+      const origin = resolveBaseOrigin(siteUrl);
       const reviewUrl = `${origin}/?review=${encodeURIComponent(item.id)}&token=${encodeURIComponent(token)}`;
       const emailContent = buildReviewEmail({ item, reviewUrl });
 

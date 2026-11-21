@@ -333,6 +333,19 @@ function inferMimeType(file) {
   return file.type || "";
 }
 
+const EXT_BY_MIME = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/gif": ".gif",
+  "video/mp4": ".mp4",
+  "video/quicktime": ".mov",
+  "video/webm": ".webm",
+  "audio/mpeg": ".mp3",
+  "audio/mp4": ".m4a",
+  "audio/wav": ".wav",
+};
+
 async function prepareUploadFile(file, setStatus) {
   if (needsOpusConversion(file.name, file.type)) {
     setStatus("Convertendo áudio do WhatsApp (.opus) para .mp3...");
@@ -347,7 +360,9 @@ async function prepareUploadFile(file, setStatus) {
   if (!ALLOWED_CONTENT_TYPES.includes(mime)) {
     throw new Error("Formato não suportado. Envie MP4, MOV, MP3, OPUS, M4A, JPG, PNG ou WEBP.");
   }
-  const ext = file.name.includes(".") ? file.name.slice(file.name.lastIndexOf(".")).toLowerCase() : "";
+  const ext = file.name.includes(".")
+    ? file.name.slice(file.name.lastIndexOf(".")).toLowerCase()
+    : EXT_BY_MIME[mime] || "";
   const safeName = `${sanitizeBaseFilename(file.name)}${ext}`;
   return new File([file], safeName, { type: mime });
 }
@@ -376,6 +391,7 @@ async function handleSubmission(event) {
     setStatus("Enviando arquivo para o estoque da Vercel...");
     const blob = await upload(`media/${preparedFile.name}`, preparedFile, {
       access: "public",
+      contentType: preparedFile.type,
       handleUploadUrl: "/api/upload",
       clientPayload: JSON.stringify({ website: websiteInput.value || "" }),
     });
@@ -466,29 +482,35 @@ async function initModerationBanner() {
       reviewFeedback.textContent =
         action === "approve" ? "Publicando no site oficial..." : "Apagando envio rejeitado...";
 
-      const actRes = await fetch("/api/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: reviewId, token, action }),
-      });
-      const actData = await actRes.json().catch(() => ({}));
+      try {
+        const actRes = await fetch("/api/review", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: reviewId, token, action }),
+        });
+        const actData = await actRes.json().catch(() => ({}));
 
-      if (!actRes.ok) {
-        reviewFeedback.textContent = actData.error || "Falha ao processar revisão.";
+        if (!actRes.ok) {
+          reviewFeedback.textContent = actData.error || "Falha ao processar revisão.";
+          approveBtn.disabled = false;
+          rejectBtn.disabled = false;
+          return;
+        }
+
+        reviewActions.hidden = true;
+        if (actData.status === "approved") {
+          reviewFeedback.textContent = "Aprovado! A lembrança já está publicada na galeria oficial abaixo.";
+          await loadItems();
+        } else if (actData.status === "rejected") {
+          reviewPreview.replaceChildren();
+          reviewFeedback.textContent = "Envio rejeitado e arquivo removido do Vercel Blob.";
+        } else {
+          reviewFeedback.textContent = "Este envio já havia sido revisado.";
+        }
+      } catch {
+        reviewFeedback.textContent = "Erro de conexão ao processar revisão. Tente novamente.";
         approveBtn.disabled = false;
         rejectBtn.disabled = false;
-        return;
-      }
-
-      reviewActions.hidden = true;
-      if (actData.status === "approved") {
-        reviewFeedback.textContent = "Aprovado! A lembrança já está publicada na galeria oficial abaixo.";
-        await loadItems();
-      } else if (actData.status === "rejected") {
-        reviewPreview.replaceChildren();
-        reviewFeedback.textContent = "Envio rejeitado e arquivo removido do Vercel Blob.";
-      } else {
-        reviewFeedback.textContent = "Este envio já havia sido revisado.";
       }
     };
 

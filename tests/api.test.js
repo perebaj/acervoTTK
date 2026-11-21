@@ -228,3 +228,71 @@ test("review endpoint rejects forged tokens, promotes approved items, and delete
   assert.equal(listRes.body.items.length, 1);
   assert.equal(listRes.body.items[0].id, "itemA");
 });
+
+test("reject preserves mediaUrl if an approved item already references it, and submissions ignore spoofed Host headers", async () => {
+  const store = makeInMemoryBlobStore();
+  const liveMediaUrl = "https://teststore.public.blob.vercel-storage.com/media/live-hero.jpeg";
+
+  await store.put(
+    "items/1000-hero.json",
+    JSON.stringify({
+      id: "hero",
+      author: "Acervo",
+      caption: "Foto oficial",
+      kind: "image",
+      mediaUrl: liveMediaUrl,
+      mimeType: "image/jpeg",
+      createdAt: "2026-11-21T10:00:00.000Z",
+    })
+  );
+
+  const sentEmails = [];
+  const submitHandler = createSubmissionsHandler({
+    store,
+    secret: SECRET,
+    siteUrl: "https://acervo-ttk.vercel.app",
+    notifyEmail: "perebaj@gmail.com",
+    sendEmail: async (msg) => {
+      sentEmails.push(msg);
+      return { id: "email_2" };
+    },
+  });
+
+  // Attacker spoofs Host/X-Forwarded-Host and reuses liveMediaUrl
+  const subRes = mockRes();
+  await submitHandler(
+    {
+      method: "POST",
+      headers: {
+        host: "evil.attacker.tld",
+        "x-forwarded-host": "evil.attacker.tld",
+      },
+      body: {
+        author: "Attacker",
+        caption: "Trying to nuke live hero image on reject",
+        mediaUrl: liveMediaUrl,
+        mimeType: "image/jpeg",
+      },
+    },
+    subRes
+  );
+
+  assert.equal(subRes.statusCode, 202);
+  // Review link MUST NOT use evil.attacker.tld!
+  assert.ok(!sentEmails[0].text.includes("evil.attacker.tld"));
+  assert.ok(sentEmails[0].text.includes("https://acervo-ttk.vercel.app/?review="));
+
+  // Moderator rejects the attacker's submission -> liveMediaUrl MUST NOT be deleted!
+  const subId = subRes.body.id;
+  const token = signReviewToken(subId, SECRET);
+  const reviewHandler = createReviewHandler({ store, secret: SECRET });
+  const rejectRes = mockRes();
+  await reviewHandler(
+    { method: "POST", body: { id: subId, token, action: "reject" } },
+    rejectRes
+  );
+
+  assert.equal(rejectRes.statusCode, 200);
+  assert.equal(rejectRes.body.status, "rejected");
+  assert.ok(!store.deleted.includes(liveMediaUrl), "Live approved mediaUrl must not be deleted!");
+});

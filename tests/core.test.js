@@ -50,6 +50,47 @@ test("validates submission, trims fields, and rejects untrusted media hosts", ()
       }),
     /mediaUrl/i
   );
+
+  // Rejects non-/media/ paths (e.g. pointing at items/*.json) and foreign Blob stores
+  assert.throws(
+    () =>
+      validateSubmission(
+        {
+          author: "Bob",
+          caption: "Delete live item",
+          mediaUrl: "https://store123.public.blob.vercel-storage.com/items/1001-seed1.json",
+          mimeType: "image/jpeg",
+        },
+        { blobToken: "vercel_blob_rw_store123_secret" }
+      ),
+    /mediaUrl/i
+  );
+  assert.throws(
+    () =>
+      validateSubmission(
+        {
+          author: "Bob",
+          caption: "Foreign store",
+          mediaUrl: "https://foreign999.public.blob.vercel-storage.com/media/pic.jpeg",
+          mimeType: "image/jpeg",
+        },
+        { blobToken: "vercel_blob_rw_store123_secret" }
+      ),
+    /mediaUrl/i
+  );
+
+  // Ignores client-supplied id/createdAt and strips newlines in author
+  const spoofed = validateSubmission({
+    id: "../../evil",
+    createdAt: "2099-01-01T00:00:00.000Z",
+    author: "Renan\r\nBcc: victim@example.com",
+    caption: "Oi",
+    mediaUrl: "https://store123.public.blob.vercel-storage.com/media/foto.jpeg",
+    mimeType: "image/jpeg",
+  });
+  assert.match(spoofed.id, /^[a-f0-9]{12}$/);
+  assert.ok(!spoofed.createdAt.startsWith("2099-"));
+  assert.ok(!/[\r\n]/.test(spoofed.author));
 });
 
 test("signs and verifies HMAC review tokens in constant time and rejects tampering", () => {
