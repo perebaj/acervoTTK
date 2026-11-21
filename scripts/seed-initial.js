@@ -33,6 +33,11 @@ const CUSTOM_CAPTIONS = {
     "Direto do arquivo confidencial do @dixx_do_ttk",
   "duttkaudio1.mp3": "Pérola clássica do TTK #1",
   "velhotexas.mp3": "Velho texas",
+  "novo1.jpeg": "Copinho na mão, guarda alta no canto da rede",
+  "novo2.jpeg": "Filosofando de perfil sobre a próxima caixa de 24",
+  "novo3.jpeg": "Topete desafiando a gravidade e bigode na régua",
+  "novo4.jpeg": "Comparça! Arara no boné em Olímpia-SP",
+  "novo5.mp4": "Registro em vídeo do TTK — Edição Especial",
 };
 
 const FEATURED_OVERRIDES = {
