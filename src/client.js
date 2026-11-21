@@ -4,6 +4,8 @@ import { ALLOWED_CONTENT_TYPES, MAX_UPLOAD_BYTES, needsOpusConversion } from "..
 const CRATE_SIZE = 24;
 
 const galleryStatus = document.getElementById("galleryStatus");
+const featuredSection = document.getElementById("featuredSection");
+const featuredSlot = document.getElementById("featuredSlot");
 const audioSection = document.getElementById("audioSection");
 const audioGrid = document.getElementById("audioGrid");
 const visualSection = document.getElementById("visualSection");
@@ -179,6 +181,75 @@ function createAudioCard(item) {
   return card;
 }
 
+function createFeaturedAudioCard(item) {
+  const card = document.createElement("article");
+  card.className = "featured-card";
+
+  const ribbon = document.createElement("div");
+  ribbon.className = "featured-ribbon";
+  ribbon.textContent = item.featuredBadge || "⭐⭐⭐⭐⭐ Menção Honrosa";
+
+  const main = document.createElement("div");
+  main.className = "featured-main";
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "audio-play-btn featured-play-btn";
+  btn.textContent = "▶";
+  btn.setAttribute("aria-label", "Tocar ou pausar áudio lendário");
+
+  const info = document.createElement("div");
+  info.className = "audio-info";
+
+  const title = document.createElement("h2");
+  title.className = "featured-title";
+  title.textContent = item.caption || "Velho Texas — O Áudio Lendário do Du";
+
+  const sub = document.createElement("p");
+  sub.className = "featured-sub";
+  sub.textContent = item.featuredNote || `Relíquia imortal na voz do ${item.author} — presença obrigatória no topo do engradado.`;
+
+  info.append(title, sub);
+  main.append(btn, info);
+
+  const audio = document.createElement("audio");
+  audio.controls = true;
+  audio.preload = "metadata";
+  audio.src = item.mediaUrl;
+
+  btn.addEventListener("click", () => {
+    if (audio.paused) {
+      if (activeAudioEl && activeAudioEl !== audio) {
+        pauseActiveAudio();
+      }
+      audio.play();
+    } else {
+      audio.pause();
+    }
+  });
+
+  audio.addEventListener("play", () => {
+    if (activeAudioEl && activeAudioEl !== audio) {
+      pauseActiveAudio();
+    }
+    activeAudioEl = audio;
+    activeAudioCard = card;
+    activeAudioBtn = btn;
+    card.classList.add("is-playing");
+    btn.textContent = "❚❚";
+  });
+
+  const onStop = () => {
+    card.classList.remove("is-playing");
+    btn.textContent = "▶";
+  };
+  audio.addEventListener("pause", onStop);
+  audio.addEventListener("ended", onStop);
+
+  card.append(ribbon, main, audio);
+  return card;
+}
+
 function openLightbox(item) {
   pauseActiveAudio();
   lightboxStage.replaceChildren();
@@ -250,13 +321,23 @@ function createVisualCard(item) {
 
 function renderGallery() {
   pauseActiveAudio();
+  featuredSlot.replaceChildren();
   audioGrid.replaceChildren();
   mediaGrid.replaceChildren();
 
-  const filtered =
-    activeFilter === "all" ? allItems : allItems.filter((item) => item.kind === activeFilter);
+  const featuredItems = allItems.filter((item) => item.featured && item.kind === "audio");
+  if (featuredItems.length > 0) {
+    featuredSection.hidden = false;
+    featuredItems.forEach((item) => featuredSlot.appendChild(createFeaturedAudioCard(item)));
+  } else {
+    featuredSection.hidden = true;
+  }
 
-  if (filtered.length === 0) {
+  const regularItems = allItems.filter((item) => !(item.featured && item.kind === "audio"));
+  const filtered =
+    activeFilter === "all" ? regularItems : regularItems.filter((item) => item.kind === activeFilter);
+
+  if (filtered.length === 0 && featuredSection.hidden) {
     audioSection.hidden = true;
     visualSection.hidden = true;
     galleryStatus.hidden = false;

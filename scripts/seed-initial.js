@@ -29,6 +29,16 @@ const CUSTOM_CAPTIONS = {
   "WhatsApp Image 2026-11-21 at 18.19.18 (2).jpeg":
     "Direto do arquivo confidencial do @dixx_do_ttk",
   "duttkaudio1.mp3": "Pérola clássica do TTK #1",
+  "velhotexas.mp3": "Velho Texas — O Áudio Lendário do Du",
+};
+
+const FEATURED_OVERRIDES = {
+  "velhotexas.mp3": {
+    featured: true,
+    featuredBadge: "⭐⭐⭐⭐⭐ Menção Honrosa",
+    featuredNote: "Participação lendária do Du — patrimônio tombado no topo oficial do acervo.",
+    author: "Du",
+  },
 };
 
 function mimeForExt(ext) {
@@ -146,16 +156,24 @@ async function main() {
     });
 
     const ts = baseEpoch + idx * 1000;
+    const special = FEATURED_OVERRIDES[filename] || {};
     const item = {
       id: `seed${seedKey}`,
       seedKey,
-      author: "Acervo Oficial",
+      author: special.author || "Acervo Oficial",
       caption,
       kind,
       mediaUrl: mediaBlob.url,
       mimeType,
       createdAt: new Date(ts).toISOString(),
       approvedAt: new Date(ts).toISOString(),
+      ...(special.featured
+        ? {
+            featured: true,
+            featuredBadge: special.featuredBadge,
+            featuredNote: special.featuredNote,
+          }
+        : {}),
     };
 
     await put(`items/${ts}-${item.id}.json`, JSON.stringify(item), {

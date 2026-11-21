@@ -296,3 +296,40 @@ test("reject preserves mediaUrl if an approved item already references it, and s
   assert.equal(rejectRes.body.status, "rejected");
   assert.ok(!store.deleted.includes(liveMediaUrl), "Live approved mediaUrl must not be deleted!");
 });
+
+test("GET /api/items pins featured honorable-mention items above newer regular items", async () => {
+  const store = makeInMemoryBlobStore();
+  await store.put(
+    "items/1000-velhotexas.json",
+    JSON.stringify({
+      id: "velhotexas",
+      featured: true,
+      featuredBadge: "⭐⭐⭐⭐⭐ Menção Honrosa",
+      author: "Du",
+      caption: "Velho Texas — O Áudio Lendário do Du",
+      kind: "audio",
+      mediaUrl: "https://teststore.public.blob.vercel-storage.com/media/velhotexas.mp3",
+      mimeType: "audio/mpeg",
+      createdAt: "2026-01-01T00:00:00.000Z",
+    })
+  );
+  await store.put(
+    "items/2000-newer.json",
+    JSON.stringify({
+      id: "newer",
+      author: "Carlos",
+      caption: "Foto mais nova",
+      kind: "image",
+      mediaUrl: "https://teststore.public.blob.vercel-storage.com/media/new.jpeg",
+      mimeType: "image/jpeg",
+      createdAt: "2026-11-21T22:00:00.000Z",
+    })
+  );
+
+  const itemsHandler = createItemsHandler({ store });
+  const res = mockRes();
+  await itemsHandler({ method: "GET" }, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.items[0].id, "velhotexas");
+  assert.equal(res.body.items[0].featured, true);
+});

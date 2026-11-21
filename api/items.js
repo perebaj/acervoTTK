@@ -21,7 +21,11 @@ export function createItemsHandler({ store = vercelBlobStore } = {}) {
 
       const valid = items
         .filter(Boolean)
-        .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+        .sort(
+          (a, b) =>
+            Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
+            String(b.createdAt).localeCompare(String(a.createdAt))
+        );
 
       res.setHeader("Cache-Control", "no-store");
       return res.status(200).json({ items: valid });
