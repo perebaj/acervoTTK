@@ -3,7 +3,7 @@ import { ALLOWED_CONTENT_TYPES, MAX_UPLOAD_BYTES, needsOpusConversion } from "..
 
 const CRATE_SIZE = 24;
 const INTRO_SEEN_KEY = "acervo_ttk_intro_seen";
-const INTRO_DURATION_MS = 10400;
+const INTRO_DURATION_MS = 13000;
 const INTRO_EXIT_MS = 720;
 
 const introStage = document.getElementById("introStage");
@@ -977,7 +977,7 @@ introSoundBtn?.addEventListener("click", (e) => {
     introAudio.currentTime = 0;
     introAudio.play().catch(() => {});
   }
-  // Restart full 10.4s show from the bottle-cap pop so they get the whole experience!
+  // Restart full intro show from the beginning when sound is unlocked.
   startIntroClock(INTRO_DURATION_MS);
 });
 
