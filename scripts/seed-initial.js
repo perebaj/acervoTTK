@@ -39,9 +39,16 @@ const CUSTOM_CAPTIONS = {
   "novo4.jpeg": "Comparça! Arara no boné em Olímpia-SP",
   "novo5.mp4": "Registro em vídeo do TTK — Edição Especial",
   "querosaberdenadafi.opus": "Quero saber de nada fi",
+  "mtg-sexta-feira.mp3": "mtg-sexta-feira",
 };
 
 const FEATURED_OVERRIDES = {
+  "mtg-sexta-feira.mp3": {
+    featured: true,
+    featuredRank: 6,
+    featuredBadge: "🔥 ⭐⭐⭐⭐⭐ Topo do Acervo",
+    featuredNote: "MTG Funk Mandelão do TTK",
+  },
   "velhotexas.mp3": {
     featured: true,
     featuredRank: 5,

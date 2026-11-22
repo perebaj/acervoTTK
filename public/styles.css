@@ -566,6 +566,14 @@ body {
   gap: 1rem;
 }
 
+#featuredSlot > .featured-card:first-child {
+  grid-column: 1 / -1;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(217, 56, 41, 0.24), transparent 52%),
+    radial-gradient(circle at 88% 20%, rgba(242, 190, 56, 0.22), transparent 55%),
+    linear-gradient(135deg, #311d18 0%, var(--crate-surface) 74%);
+}
+
 .featured-card {
   background:
     radial-gradient(circle at 12% 20%, rgba(242, 190, 56, 0.2), transparent 55%),
