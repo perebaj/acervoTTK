@@ -38,6 +38,7 @@ const CUSTOM_CAPTIONS = {
   "novo3.jpeg": "Topete desafiando a gravidade e bigode na régua",
   "novo4.jpeg": "Comparça! Arara no boné em Olímpia-SP",
   "novo5.mp4": "Registro em vídeo do TTK — Edição Especial",
+  "querosaberdenadafi.opus": "Quero saber de nada fi",
 };
 
 const FEATURED_OVERRIDES = {
