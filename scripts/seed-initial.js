@@ -43,9 +43,16 @@ const CUSTOM_CAPTIONS = {
 const FEATURED_OVERRIDES = {
   "velhotexas.mp3": {
     featured: true,
+    featuredRank: 5,
     featuredBadge: "⭐⭐⭐⭐⭐ Menção Honrosa",
-    featuredNote: "Participação lendária do Du — patrimônio tombado no topo oficial do acervo.",
+    featuredNote: "Áudio clássico do Du",
     author: "Du",
+  },
+  "duttkaudio1.mp3": {
+    featured: true,
+    featuredRank: 4,
+    featuredBadge: "⭐⭐⭐⭐ Menção Honrosa",
+    featuredNote: "Clássico do acervo",
   },
 };
 
@@ -178,6 +185,7 @@ async function main() {
       ...(special.featured
         ? {
             featured: true,
+            featuredRank: special.featuredRank || 1,
             featuredBadge: special.featuredBadge,
             featuredNote: special.featuredNote,
           }

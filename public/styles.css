@@ -560,6 +560,12 @@ body {
   margin: 0;
 }
 
+#featuredSlot {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 1rem;
+}
+
 .featured-card {
   background:
     radial-gradient(circle at 12% 20%, rgba(242, 190, 56, 0.2), transparent 55%),

@@ -220,7 +220,11 @@ function createFeaturedAudioCard(item) {
 
   const sub = document.createElement("p");
   sub.className = "featured-sub";
-  sub.textContent = `Áudio clássico do ${item.author}`;
+  sub.textContent =
+    item.featuredNote ||
+    (item.author && item.author !== "Acervo Oficial"
+      ? `Áudio clássico do ${item.author}`
+      : "Clássico do acervo");
 
   info.append(title, sub);
   main.append(btn, info);

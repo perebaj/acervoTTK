@@ -19,11 +19,12 @@ export function createItemsHandler({ store = vercelBlobStore } = {}) {
         allBlobs.map((b) => store.fetchJson(b.url).catch(() => null))
       );
 
+      const rankOf = (item) => Number(item.featuredRank ?? (item.featured ? 1 : 0));
       const valid = items
         .filter(Boolean)
         .sort(
           (a, b) =>
-            Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
+            rankOf(b) - rankOf(a) ||
             String(b.createdAt).localeCompare(String(a.createdAt))
         );
 

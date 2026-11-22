@@ -304,13 +304,29 @@ test("GET /api/items pins featured honorable-mention items above newer regular i
     JSON.stringify({
       id: "velhotexas",
       featured: true,
+      featuredRank: 5,
       featuredBadge: "⭐⭐⭐⭐⭐ Menção Honrosa",
       author: "Du",
-      caption: "Velho Texas — O Áudio Lendário do Du",
+      caption: "Velho texas",
       kind: "audio",
       mediaUrl: "https://teststore.public.blob.vercel-storage.com/media/velhotexas.mp3",
       mimeType: "audio/mpeg",
       createdAt: "2026-01-01T00:00:00.000Z",
+    })
+  );
+  await store.put(
+    "items/1500-perola1.json",
+    JSON.stringify({
+      id: "perola1",
+      featured: true,
+      featuredRank: 4,
+      featuredBadge: "⭐⭐⭐⭐ Menção Honrosa",
+      author: "Acervo Oficial",
+      caption: "Pérola clássica do TTK #1",
+      kind: "audio",
+      mediaUrl: "https://teststore.public.blob.vercel-storage.com/media/perola1.mp3",
+      mimeType: "audio/mpeg",
+      createdAt: "2026-06-01T00:00:00.000Z",
     })
   );
   await store.put(
@@ -330,6 +346,8 @@ test("GET /api/items pins featured honorable-mention items above newer regular i
   const res = mockRes();
   await itemsHandler({ method: "GET" }, res);
   assert.equal(res.statusCode, 200);
-  assert.equal(res.body.items[0].id, "velhotexas");
-  assert.equal(res.body.items[0].featured, true);
+  assert.deepEqual(
+    res.body.items.map((i) => i.id),
+    ["velhotexas", "perola1", "newer"]
+  );
 });
